@@ -1,47 +1,52 @@
 const form = document.querySelector('form');
-const finalresult = document.querySelector('.result');
+const finalScoreContainer = document.querySelector('.final-score-container');
 
 const correctAnswers = ['B', 'D', 'A', 'C'];
+
 let score = 0;
 
-const getOptionsChecked = () => {
-  return optionsCheckedbyUser = [
-    form.inputQuestion1.value,
-    form.inputQuestion2.value,
-    form.inputQuestion3.value,
-    form.inputQuestion4.value
-  ];
-}
+const getOptionsChecked = () => correctAnswers.map((_, index) => form[`inputQuestion${index + 1}`].value)
 
-const calculateScore = (optionCheckedbyUser, index) => {
-  if (optionCheckedbyUser === correctAnswers[index]) {
-    score += 25;
-  }
+const calculateScore = optionsCheckedbyUser => {
+  score = 0;
+
+  optionsCheckedbyUser.forEach((optionCheckedbyUser, index) => {
+    const isUserAnswerCorrect = optionCheckedbyUser === correctAnswers[index];
+    if (isUserAnswerCorrect) {
+      score += 25;
+    }
+  })
 }
 
 const animateResult = () => {
-  let timer = null;
-  let numToShow = 0;
+  let counter = 0;
   
-  timer = setInterval(() => {
-    if (numToShow === score) {
+  const timer = setInterval(() => {
+    if (counter === score) {
       clearInterval(timer);
       return;
     }
-    finalresult.querySelector('span').textContent = `${++numToShow}%`; 
+
+    finalScoreContainer.querySelector('span').textContent = `${++counter}%`; 
   }, 10);
 }
 
 const showScore = () => {
-  scrollTo(0,0);
-  finalresult.classList.remove('d-none');
+  scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
+  });
+
+  finalScoreContainer.classList.remove('d-none');
 }
 
 const handleFormSubmit = event => {
   event.preventDefault();
-  score = 0;
+
   const optionsCheckedbyUser = getOptionsChecked();
-  optionsCheckedbyUser.forEach(calculateScore);
+
+  calculateScore(optionsCheckedbyUser);
   showScore();
   animateResult();
 }
